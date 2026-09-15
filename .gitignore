@@ -1,0 +1,30 @@
+# python
+.venv/
+.ipynb_checkpoints/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+
+# mac
+.DS_Store
+*.Identifier
+
+# Visual Studio Code
+.vscode/
+
+# dummy data
+Data/dummy_data/
+
+# summary_table
+summary_table/
+
+# Saved graph image
+Graph/
+
+# pickle output
+Pickle/
+
+# test
+test/
