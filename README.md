@@ -1,12 +1,45 @@
 # experiment_condition_analysis
 
-実験機器から出力されるCSVデータをもとに、前処理条件や温度データを分析するJupyterノートブック群です。アプリケーションコードは持たず、すべての分析ロジックは `.ipynb` ノートブック内に記述されています。
+ある実験装置における２つの測定手法（MethodA, MethodB）から出力されるCSVデータから、**前処理条件や温度データを抽出し、測定者ごと・測定時期ごとの変化や違いを可視化・分析**するJupyterノートブック群です。
 
-## データについて
+実際の実験データの代わりに、ダミーデータをコードから生成して使用します。生成する場合はdata_generator_MethodA.ipynb, data_generator_MethodB.ipynbの全セルを実行してください。  
+なおデータを生成しなくてもextract_conditions.ipynbまたはpretreatment_temperature_analysis.ipynbで作成したグラフなどはノート上に残っているためそのまま確認可能です。
 
-実際の実験データの代わりに、合成したダミーデータ（`Data/dummy_data/`）を使用します。これにより、機密性の高い実機データを外部に出すことなくリポジトリ上で分析コードの開発・検証ができます。
+## 目的
 
-## セットアップ
+ある実験装置について、(i) **測定者ごとの前処理条件の違いの調査**、および(ii) **前処理時の目標温度と実際の温度との差の調査**を実施したい。  
+そこで機械から出力されたCSVデータをPandasで読み込み目的のデータを抽出し、構造化データ（表データ）としてまとめる。  
+そのデータからmatplotlibやseabornを用いてグラフ化を行い。前処理条件や前処理温度にどのような変化・特徴が見られるのかを分析する。
+
+## 装置・測定法について
+
+- この実験装置では指定した条件で試料を前処理した後、複数回のパルスを注入して測定を行います。
+- 装置はMachine AとMachine Bの2台が存在します。
+- 分析方法にはMethod AとMethod Bの２種類が存在します。
+- データファイルには実際の測定データが記録されたデータ（SampleX_MethodX_yyyymmdd.csv）と、前処理から測定含む全体プロセスの温度・信号トレンドのデータ（Trend_SampleX_MethodX_yyyymmdd.csv）の２種類があります。
+- 測定を行うユーザーはUserA, UserB, UserC, ..., UserOの15名存在します。
+
+## ノート一覧
+
+### **data_generator_MethodA.ipynb**, **data_generator_MethodB.ipynb**
+
+測定法A（MethodA）および測定法B（MethodB）のダミー測定データを生成するためのノートです。  
+extract_conditions.ipynbまたはpretreatment_temperature_analysis.ipynbを再度実行したい場合は事前にこの２つのノート上のセルをすべて実行する必要があります。  
+実行すると機械、ユーザー、測定法ごとにフォルダ分けされてCSVデータが生成されます。
+
+### **extract_conditions.ipynb**
+
+CSVデータから前処理条件（ガス、流量、処理時間、温度）を抽出し、測定者・時期ごとの測定条件の違い・変化を分析するノートです。  
+ヒストグラム、ヒートマップなどを用いて測定者・時期ごとの測定条件の違いを可視化します。
+
+### **pretreatment_temperature_analysis.ipynb**
+
+サンプル測定結果データ（名称がsampleXから始まるCSVデータ）と温度トレンドデータ（時系列温度記録、名称がTrendから始まるデータ）を対応付けて、前処理の目標温度と実際の到達温度（温度一定部分）を比較・分析するノートです。  
+ヒストグラム、散布図などを用いて機器、測定法、時期ごとの傾向を分析します。
+
+## （ノートを実行したい場合）セットアップ
+
+1. 仮想環境を作成します。
 
 ```bash
 python3 -m venv .venv
@@ -14,21 +47,12 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-JupyterLabを起動し、対象のノートブックを上から順に実行してください。
+2. JupyterLabを起動します。
 
 ```bash
 jupyter lab
 ```
 
-**注意:** `extract_conditions.ipynb` や `pretreatment_temperature_all.ipynb` などの分析ノートを実行する前に、`data_generator_MethodA.ipynb` と `data_generator_MethodB.ipynb` を実行して `Data/dummy_data/` にダミーデータを生成しておく必要があります。
+3. data_generator_MethodA.ipynbおよびdata_generator_MethodB.ipynbを開き、上から順にすべて実行してください。
 
-## 主なノートブック
-
-### `extract_conditions.ipynb`
-前処理条件（ガス種、流量、時間、目標温度、設定値、パルス回数など）を多数のサンプルCSVから抽出し、測定者ごと・時期ごとの測定条件の違いを分析するノートです。
-
-### `pretreatment_temperature_all.ipynb`
-Trendログ（時系列温度記録）とサンプル測定CSVを対応付け、前処理の目標温度と実際の到達温度（定常状態）を比較・分析するノートです。機器、測定法、時期ごとの傾向を分析します。
-
-### `data_generator_MethodA.ipynb` / `data_generator_MethodB.ipynb`
-上記の分析ノートで使用する合成ダミーデータ（`Data/dummy_data/`）を生成するためのノートです。
+4. (i) 測定者ごとの前処理条件の違いの調査については、extract_conditions.ipynbを、(ii) 前処理時の目標温度と実際の温度との差の調査についてはpretreatment_temperature_analysis.ipynbを上から実行してください。
